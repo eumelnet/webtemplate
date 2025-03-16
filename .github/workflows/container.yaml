@@ -33,7 +33,7 @@ jobs:
             --set ingress.hosts[0].paths[0].path=/ \
             --set ingress.hosts[0].paths[0].pathType=ImplementationSpecific \
             --set ingress.tls[0].hosts[0]="${GITHUB_REPOSITORY##*/}".otc.mcsps.de \
-            --set ingress.tls[0].secretName="${GITHUB_REPOSITORY##*/}"-otc-mcsps-de-tls-secret
+            --set ingress.tls[0].secretName="${GITHUB_REPOSITORY##*/}"-otc-mcsps-de-tls-secret \
             oci://ghcr.io/eumelnet/webapp:0.1.0 \
             --create-namespace
         env:
