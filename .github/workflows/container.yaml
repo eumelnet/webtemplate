@@ -23,7 +23,7 @@ jobs:
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
           echo "$KUBECONFIG_FILE" | base64 --decode > /tmp/config
           export KUBECONFIG=/tmp/config
-          helm -n "${GITHUB_REPOSITORY##*/}" template webapp \
+          helm -n "${GITHUB_REPOSITORY##*/}" upgrade -i webapp \
             --set image.repository=ghcr.io/eumelnet/eumelnet/webtemplate:main \
             --set ingress.enabled=true \
             --set ingress.className=nginx \
@@ -35,7 +35,6 @@ jobs:
             --set ingress.tls[0].hosts[0]="${GITHUB_REPOSITORY##*/}".otc.mcsps.de \
             --set ingress.tls[0].secretName="${GITHUB_REPOSITORY##*/}"-otc-mcsps-de-tls-secret \
             oci://ghcr.io/eumelnet/webapp:0.1.0 \
-            --debug \
             --create-namespace
         env:
           KUBECONFIG_FILE: '${{ secrets.KUBE_CONFIG }}'
