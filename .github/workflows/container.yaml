@@ -35,6 +35,7 @@ jobs:
             --set ingress.tls[0].hosts[0]="${GITHUB_REPOSITORY##*/}".otc.mcsps.de \
             --set ingress.tls[0].secretName="${GITHUB_REPOSITORY##*/}"-otc-mcsps-de-tls-secret \
             oci://ghcr.io/eumelnet/webapp:0.1.0 \
+            --debug \
             --create-namespace
         env:
           KUBECONFIG_FILE: '${{ secrets.KUBE_CONFIG }}'
