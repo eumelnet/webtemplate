@@ -18,13 +18,11 @@ jobs:
           export DOCKER_BUILDKIT=1
           docker build -f Dockerfile -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${VERSION} .
           docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${VERSION}
-        env:
-          #IMAGE: storagecheck
       - name: Helm install
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
           export KUBECONFIG=$KUBECONFIG_FILE
-          helm -n "${GITHUB_REPOSITORY##*/}"-n upgrade -i webapp oci://ghcr.io/eumelnet/webapp:0.1.0 --create-namespace
+          helm -n "${GITHUB_REPOSITORY##*/}" upgrade -i webapp oci://ghcr.io/eumelnet/webapp:0.1.0 --create-namespace
         env:
           KUBECONFIG_FILE: '${{ secrets.KUBE_CONFIG }}'
 
