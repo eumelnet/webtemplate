@@ -21,7 +21,8 @@ jobs:
       - name: Helm install
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-          export KUBECONFIG=$KUBECONFIG_FILE
+          echo "$KUBECONFIG_FILE" | base64 --decode > /tmp/config
+          export KUBECONFIG=/tmp/config
           helm -n "${GITHUB_REPOSITORY##*/}" upgrade -i webapp oci://ghcr.io/eumelnet/webapp:0.1.0 --create-namespace
         env:
           KUBECONFIG_FILE: '${{ secrets.KUBE_CONFIG }}'
