@@ -1,0 +1,42 @@
+name: Webapp
+
+on:
+  push:
+#    tags:
+#    - "*"
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Container Build / Push
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          export DOCKER_BUILDKIT=1
+          docker build -f Dockerfile -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${VERSION} .
+          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${VERSION}
+        env:
+          #IMAGE: storagecheck
+      - name: Helm install
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          export KUBECONFIG=$KUBECONFIG_FILE
+          helm -n "${GITHUB_REPOSITORY##*/}"-n upgrade -i webapp oci://ghcr.io/eumelnet/webapp:0.1.0 --create-namespace
+        env:
+          KUBECONFIG_FILE: '${{ secrets.KUBE_CONFIG }}'
+
+#      - name: 'Deploy'
+#        uses: 'deliverybot/helm@v1'
+#        with:
+#          release: 'webapp'
+#          track: canary
+#          namespace: "${GITHUB_REPOSITORY##*/}"
+#          chart: 'oci://ghcr.io/eumelnet/webapp:0.1.0'
+#          token: '${{ github.token }}'
+#          values: |
+#            name: foobar
+#        env:
+#          KUBECONFIG_FILE: '${{ secrets.KUBE_CONFIG }}'
